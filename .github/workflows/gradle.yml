@@ -24,15 +24,12 @@ jobs:
       - name: Build with Gradle Wrapper
         id: gradle_build
         run: |
-            result=$(./gradlew build 2>&1)  # Ejecutar la compilación y capturar la salida
-            echo "::set-output name=result::${result}"  # Almacenar el resultado en una variable de salida
+          ./gradlew build  # Ejecutar la compilación
+          echo "::set-output name=result::$?"  # Almacenar el resultado de la compilación en una variable de salida
 
       - name: Verificar resultado de la compilación
         if: steps.gradle_build.outputs.result != '0'  # Verificar si la compilación falló (resultado distinto de 0)
         run: |
-          
-          if [[ steps.gradle_build.outputs.result == 1 ]]; then
-            echo "Error: Gradle build failed."
-            git reset --hard $(git rev-parse HEAD~1)  # Revertir cambios locales
-            exit 1
-          fi
+          echo "Error: Gradle build failed."
+          git reset --hard $(git rev-parse HEAD~1)  # Revertir cambios locales
+          exit 1
