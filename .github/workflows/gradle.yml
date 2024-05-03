@@ -30,6 +30,9 @@ jobs:
       - name: Verificar resultado de la compilación
         if: steps.gradle_build.outputs.result != '0'  # Verificar si la compilación falló (resultado distinto de 0)
         run: |
-          echo "Error: Gradle build failed."
-          git reset --hard $(git rev-parse HEAD~1)  # Revertir cambios locales
-          exit 1
+          
+          if [[ steps.gradle_build.outputs.result == 1 ]]; then
+            echo "Error: Gradle build failed."
+            git reset --hard $(git rev-parse HEAD~1)  # Revertir cambios locales
+            exit 1
+          fi
