@@ -7,6 +7,6 @@ public class Main {
     //add comment
     //comment 3
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args)
+        SpringApplication.run(Main.class, args);
     }
 }
