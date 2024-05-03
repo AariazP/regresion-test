@@ -9,29 +9,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Configurar JDK 17
-        uses: actions/setup-java@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Configurar Gradle
-        uses: gradle/setup-gradle@v3
-
-      - name: Compilar con Gradle Wrapper
+      - name: Build with Gradle Wrapper
         id: gradle_build
         run: |
-          result=$(./gradlew build 2>&1)  # Ejecutar la compilación y capturar la salida
-          echo "::set-output name=result::${result}"  # Almacenar el resultado en una variable de salida
+            result=$(./gradlew build 2>&1)  # Ejecutar la compilación y capturar la salida
+            echo "::set-output name=result::${result}"  # Almacenar el resultado en una variable de salida
 
       - name: Verificar resultado de la compilación
         if: steps.gradle_build.outputs.result != '0'  # Verificar si la compilación falló (resultado distinto de 0)
         run: |
           echo "Error: Gradle build failed."
-          git checkout -- .  # Descartar cambios en el directorio de trabajo
+          git reset --hard $(git rev-parse HEAD)  # Revertir cambios locales
           exit 1
